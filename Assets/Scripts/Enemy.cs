@@ -4,7 +4,7 @@ public class Enemy : MonoBehaviour, IDamageable
 {
     public float speed = 2f;
     private int hp = 30;
-    private Transform player;   //플레이어 위치 추적용
+    private Transform player;
 
     void Start()
     {
@@ -13,9 +13,8 @@ public class Enemy : MonoBehaviour, IDamageable
 
     void Update()
     {
-        if(player == null) return;
+        if (player == null) return;
 
-        // 매 프레임 플레이어 방향으로 이동
         Vector2 direction = (player.position - transform.position).normalized;
         transform.Translate(direction * speed * Time.deltaTime);
     }
@@ -24,19 +23,19 @@ public class Enemy : MonoBehaviour, IDamageable
     {
         hp -= damage;
         Debug.Log($"적 hp: {hp}");
-        if(hp <= 0)
+        if (hp <= 0)
         {
-            GameManager.Instance.AddScore(5);   //적 처치 = 점수 5점!
+            GameManager.Instance.AddScore(5);
             Destroy(gameObject);
         }
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        // 플레이어한테 닿으면 데미지
-        if(other.CompareTag("Player"))
+        if (other.CompareTag("Player"))
         {
-            Debug.Log("플레이어 피격!");
+            if (other.TryGetComponent<IDamageable>(out IDamageable target))
+                target.TakeDamage(10);
         }
     }
 }
